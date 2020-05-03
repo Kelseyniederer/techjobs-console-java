@@ -7,9 +7,8 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.Collections;
 
 /**
  * Created by LaunchCode
@@ -62,23 +61,48 @@ public class JobData {
      * with "Enterprise Holdings, Inc".
      *
      * @param column   Column that should be searched.
-     * @param value Value of teh field to search for
+     * @param value Value of the field to search for
      * @return List of all jobs matching the criteria
      */
     public static ArrayList<HashMap<String, String>> findByColumnAndValue(String column, String value) {
 
         // load data, if not already loaded
         loadData();
-
+        String lcSearchValue = value.toLowerCase();
         ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
 
         for (HashMap<String, String> row : allJobs) {
 
             String aValue = row.get(column);
 
-            if (aValue.contains(value)) {
+            if (aValue.toLowerCase().contains(value)) {
                 jobs.add(row);
             }
+        }
+
+        return jobs;
+
+    }
+
+    /** Will search for a string within each of the columns
+     *
+     */
+
+    public static ArrayList<HashMap<String, String>> findByValue(String searchValue){
+        loadData();
+
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+        String lcSearchValue = searchValue.toLowerCase();
+        for (HashMap<String, String> job : allJobs) {
+            Set<Map.Entry<String, String>> jobMap = job.entrySet();
+            for (Map.Entry<String, String> jobEntry : jobMap) {
+                if (jobEntry.getValue().toLowerCase().contains(lcSearchValue)){
+                    if(! jobs.contains(job)) {
+                        jobs.add(job);
+                    }
+                }
+            }
+
         }
 
         return jobs;
